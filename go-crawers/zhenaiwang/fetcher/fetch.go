@@ -1,4 +1,4 @@
-package fetch
+package fetcher
 
 import (
 	"fmt"
@@ -7,7 +7,13 @@ import (
 )
 
 func Fetch(url string) ([]byte, error) {
-	resp, err := http.Get(url)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("user-agent", "Mozilla/5.0")
+	resp, err := http.DefaultClient.Do(req)
+	// resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
