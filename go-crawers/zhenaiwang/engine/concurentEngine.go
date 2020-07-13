@@ -7,31 +7,41 @@ import (
 	"github.com/go-crawler/zhenaiwang/fetcher"
 )
 
-type ConcurrentEngine struct{}
+type ConcurrentEngine struct {
+	Scheduler   Scheduler
+	WorkerCount int
+}
+
+type Scheduler interface {
+	Submit(Request)
+}
 
 func (c ConcurrentEngine) Run(seed ...Request) {
-	var requests []Request
 	for _, r := range seed {
-		requests = append(requests, r)
+		c.Scheduler.Submit(r)
 	}
-	for len(requests) > 0 {
-		r := requests[0]
-		requests = requests[1:]
 
-		parseResult, err := s.worker(r)
-		if err != nil {
-			log.Println(err)
-			continue
+	in := make(chan Request)
+	out := make(chan ParseResult)
+
+	for i := 0; i < c.WorkerCount; i++ {
+		go func() {
+			c.createWorker(in, out)
+		}()
+	}
+
+	for {
+		parseResult := <-out
+		for _, r := range parseResult.Requests {
+			c.Scheduler.Submit(r)
 		}
-
-		requests = append(requests, parseResult.Requests...)
-		for _, item := range parseResult.Items {
+		for _, item := range parseResult.Requests {
 			fmt.Printf("Got : %v\n", item)
 		}
 	}
 }
 
-func (s SimpleEngine) worker(r Request) (ParseResult, error) {
+func (c ConcurrentEngine) worker(r Request) (ParseResult, error) {
 	fmt.Println("Url: ", r.Url)
 	body, err := fetcher.Fetch(r.Url)
 	if err != nil {
@@ -40,4 +50,16 @@ func (s SimpleEngine) worker(r Request) (ParseResult, error) {
 
 	parseResult := r.ParserFunc(body)
 	return parseResult, nil
+}
+
+func (c ConcurrentEngine) createWorker(in chan Request, out chan ParseResult) {
+	for {
+		r := <-in
+		parseResult, err := c.worker(r)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		out <- parseResult
+	}
 }

@@ -23,7 +23,7 @@ func ParseCity(contents []byte) engine.ParseResult {
 				return ParseProfile(c, string(m[2]))
 			},
 		})
-		result.Items = append(result.Items, "City "+string(m[2]))
+		result.Items = append(result.Items, "User "+string(m[2]))
 	}
 
 	return result
