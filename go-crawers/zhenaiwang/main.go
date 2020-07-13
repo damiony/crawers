@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/go-crawler/zhenaiwang/engine"
+	"github.com/go-crawler/zhenaiwang/scheduler"
 	"github.com/go-crawler/zhenaiwang/zhenai/parser"
 )
 
@@ -12,5 +15,12 @@ func main() {
 		ParserFunc: parser.ParseCityList,
 	})
 
-	engine.SimpleEngine{}.Run(requests...)
+	e := engine.ConcurrentEngine{
+		Scheduler: &scheduler.SimpleScheduler{
+			WorkerChan: make(chan engine.Request),
+		},
+		WorkerCount: 10,
+	}
+	fmt.Println(e.Scheduler)
+	e.Run(requests...)
 }
