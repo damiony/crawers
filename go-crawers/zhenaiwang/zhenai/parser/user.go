@@ -1,30 +1,36 @@
 package parser
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
 	"regexp"
 
 	"github.com/go-crawler/zhenaiwang/engine"
+	"github.com/go-crawler/zhenaiwang/model"
 )
 
-const cityRe = `<a href="(http://album.zhenai.com/u/\d+)" target="_blank">([^<]+)</a>`
+const userRe = `,"memberList":(\[[^\]]+"}\])`
 
 func ParseCity(contents []byte) engine.ParseResult {
-	re := regexp.MustCompile(cityRe)
-	match := re.FindAllSubmatch(contents, -1)
-	if match == nil {
+	re := regexp.MustCompile(userRe)
+	matchs := re.FindAllSubmatch(contents, -1)
+	if matchs == nil {
 		return engine.ParseResult{}
 	}
 
-	result := engine.ParseResult{}
-	for _, m := range match {
-		result.Requests = append(result.Requests, engine.Request{
-			Url: string(m[1]),
-			ParserFunc: func(c []byte) engine.ParseResult {
-				return ParseProfile(c, string(m[2]))
-			},
-		})
-		result.Items = append(result.Items, "User "+string(m[2]))
+	var result engine.ParseResult
+	for _, m := range matchs {
+		users := []model.Profile{}
+		err := json.Unmarshal(m[1], &users)
+		if err != nil {
+			log.Println("json unmarshal error:", err)
+			fmt.Println("input: ", string(m[1]))
+			continue
+		}
+		for _, user := range users {
+			result.Items = append(result.Items, user)
+		}
 	}
-
 	return result
 }

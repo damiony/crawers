@@ -1,9 +1,10 @@
 package model
 
 type Profile struct {
-	Name     string
-	Addr     string
-	Age      int
-	Marriage string
-	Height   int
+	NickName      string
+	Constellation string
+	Education     string
+	Age           int
+	Marriage      string
+	Height        int
 }
