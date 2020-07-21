@@ -5,11 +5,13 @@ import (
 	"log"
 
 	"github.com/go-crawler/zhenaiwang/fetcher"
+	"github.com/go-crawler/zhenaiwang/model"
 )
 
 type ConcurrentEngine struct {
 	Scheduler   Scheduler
 	WorkerCount int
+	ItemChan    chan model.Profile
 }
 
 type Scheduler interface {
@@ -69,4 +71,8 @@ func (c *ConcurrentEngine) createWorker(out chan ParseResult) {
 		}
 		out <- result
 	}
+}
+
+func (c *ConcurrentEngine) ItemSave(user *model.Profile) {
+
 }
