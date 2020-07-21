@@ -17,7 +17,7 @@ func TestSaveData(t *testing.T) {
 		MemberId:      123456, // ID
 		Sex:           0,      // 性别 0男 1女
 	}
-	err := SaveData(&user)
+	err := SaveDataToMysql(&user)
 	if err != nil {
 		t.Errorf("save error: %v", err)
 	} else {

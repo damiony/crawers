@@ -13,18 +13,20 @@ package data
 import (
 	"log"
 
-	"github.com/crawers/go-crawers/zhenaiwang/save/data"
+	"github.com/crawers/go-crawers/zhenaiwang/save/db"
 	"github.com/crawers/go-crawers/zhenaiwang/save/model"
 )
 
-func SaveData(user *model.Profile) error {
-	db, err := data.InitMysql("root", "Damion123$", "127.0.0.1:3306")
+func SaveDataToMysql(user *model.Profile) error {
+	mysqlDB, err := db.InitMysql("root", "Damion123$", "127.0.0.1:3306")
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	defer mysqlDB.Close()
 
-	stmt, err := db.Prepare("INSERT INTO profile (id, name, education, age, marriage, height, sex) values(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE education=values(education), age=values(age), marriage=values(marriage), height=values(height), sex=values(sex);")
+	stmt, err := mysqlDB.Prepare("INSERT INTO profile (id, name, education, age, marriage, height, sex)" +
+		"values(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE education=values(education), age=values(age), " +
+		"marriage=values(marriage), height=values(height), sex=values(sex);")
 	if err != nil {
 		return err
 	}
