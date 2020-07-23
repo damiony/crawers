@@ -1,4 +1,4 @@
-module github.com/crawers/go-crawers/zhenaiwang/save
+module save
 
 go 1.14
 

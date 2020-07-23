@@ -11,7 +11,7 @@ import (
 type ConcurrentEngine struct {
 	Scheduler   Scheduler
 	WorkerCount int
-	ItemChan    chan model.Profile
+	ItemChan    chan Item
 }
 
 type Scheduler interface {
@@ -42,7 +42,8 @@ func (c *ConcurrentEngine) Run(seed ...Request) {
 			c.Scheduler.Submit(r)
 		}
 		for _, item := range result.Items {
-			fmt.Printf("Got : %v\n", item)
+			// fmt.Printf("Got : %v\n", item)
+			c.ItemChan <- item
 		}
 	}
 }

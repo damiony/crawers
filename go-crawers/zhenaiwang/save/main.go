@@ -4,8 +4,8 @@ import (
 	"log"
 	"net"
 	"net/rpc/jsonrpc"
-
-	"github.com/crawers/go-crawers/zhenaiwang/save/rpcServer"
+	"save/rpcServer"
+	"time"
 )
 
 func main() {
@@ -22,5 +22,6 @@ func main() {
 		}
 
 		go jsonrpc.ServeConn(conn)
+		time.Sleep(time.Second)
 	}
 }

@@ -1,9 +1,10 @@
 package data
 
 import (
-	"github.com/crawers/go-crawers/zhenaiwang/save/db"
+	"save/db"
+	"save/engine"
 )
 
-func SaveDataToES(user interface{}) error {
-	return db.InsertDataToES(user)
+func SaveDataToES(item *engine.Item) error {
+	return db.InsertDataToES(item)
 }

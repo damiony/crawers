@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"log"
+	"save/engine"
 	"strconv"
 
-	"github.com/crawers/go-crawers/zhenaiwang/save/model"
 	"github.com/olivere/elastic/v7"
 )
 
@@ -15,10 +15,6 @@ var (
 	Type      = "user"
 	es        *elastic.Client
 )
-
-type ElasticDB struct {
-	Client *elastic.Client
-}
 
 // initialize
 func init() {
@@ -37,15 +33,18 @@ func init() {
 }
 
 // insert data in elasticsearch
-func InsertDataToES(user *model.Profile) error {
+func InsertDataToES(item *engine.Item) error {
 	if es == nil {
 		return errors.New("Cannot get elasticsearch client")
 	}
+	if item.Type == "" || item.Id == 0 {
+		return errors.New("Invalid type or id")
+	}
 	_, err := es.Index().
 		Index(IndexName).
-		Type(Type).
-		Id(strconv.Itoa(user.MemberId)).
-		BodyJson(user).
+		Type(item.Type).
+		Id(strconv.Itoa(item.Id)).
+		BodyJson(item).
 		Do(context.Background())
 	return err
 }

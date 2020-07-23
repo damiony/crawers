@@ -12,9 +12,8 @@ package data
 
 import (
 	"log"
-
-	"github.com/crawers/go-crawers/zhenaiwang/save/db"
-	"github.com/crawers/go-crawers/zhenaiwang/save/model"
+	"save/db"
+	"save/model"
 )
 
 func SaveDataToMysql(user *model.Profile) error {

@@ -1,16 +1,17 @@
 package rpcServer
 
 import (
+	"fmt"
 	"net/rpc"
-
-	"github.com/crawers/go-crawers/zhenaiwang/save/data"
-	"github.com/crawers/go-crawers/zhenaiwang/save/model"
+	"save/data"
+	"save/engine"
 )
 
 type ItemSaveService struct{}
 
-func (itemSave *ItemSaveService) SaveItems(user *model.Profile, reply *string) error {
-	err := data.SaveDataToES(user)
+func (itemSave *ItemSaveService) SaveItems(item *engine.Item, reply *string) error {
+	fmt.Printf("Save item: %+v\n", item)
+	err := data.SaveDataToES(item)
 	if err == nil {
 		*reply = "ok"
 		return nil
@@ -21,5 +22,5 @@ func (itemSave *ItemSaveService) SaveItems(user *model.Profile, reply *string) e
 }
 
 func RegisterItemSaveService() error {
-	return rpc.RegisterName("ItemSave", new(ItemSaveService))
+	return rpc.RegisterName("ItemSaveService", new(ItemSaveService))
 }

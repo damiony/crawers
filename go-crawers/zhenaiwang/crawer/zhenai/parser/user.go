@@ -29,7 +29,13 @@ func ParseCity(contents []byte) engine.ParseResult {
 			continue
 		}
 		for _, user := range users {
-			result.Items = append(result.Items, user)
+			result.Items = append(result.Items,
+				engine.Item{
+					Url:    fmt.Sprintf("https://album.zhenai.com/u/%d", user.MemberId),
+					Type:   "zhenai",
+					Id:     user.MemberId,
+					Upload: user,
+				})
 		}
 	}
 	return result
