@@ -1,25 +1,24 @@
 package parser
 
 import (
+	"crawer/engine"
+	"crawer/model"
 	"encoding/json"
 	"fmt"
 	"log"
 	"regexp"
-
-	"github.com/go-crawler/zhenaiwang/engine"
-	"github.com/go-crawler/zhenaiwang/model"
 )
 
 const userRe = `,"memberList":(\[[^\]]+"}\])`
 
-func ParseCity(contents []byte) engine.ParseResult {
+func ParseCity(contents []byte) engine.RequestResult {
 	re := regexp.MustCompile(userRe)
 	matchs := re.FindAllSubmatch(contents, -1)
 	if matchs == nil {
-		return engine.ParseResult{}
+		return engine.RequestResult{}
 	}
 
-	var result engine.ParseResult
+	var result engine.RequestResult
 	for _, m := range matchs {
 		users := []model.Profile{}
 		err := json.Unmarshal(m[1], &users)

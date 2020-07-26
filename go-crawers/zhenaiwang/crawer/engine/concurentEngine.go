@@ -1,17 +1,10 @@
 package engine
 
-import (
-	"fmt"
-	"log"
-
-	"github.com/go-crawler/zhenaiwang/fetcher"
-	"github.com/go-crawler/zhenaiwang/model"
-)
-
 type ConcurrentEngine struct {
 	Scheduler   Scheduler
 	WorkerCount int
 	ItemChan    chan Item
+	Worker      Worker
 }
 
 type Scheduler interface {
@@ -23,12 +16,13 @@ type Scheduler interface {
 }
 
 func (c *ConcurrentEngine) Run(seed ...Request) {
-	out := make(chan ParseResult)
+	out := make(chan RequestResult)
 	c.Scheduler.Run()
 
 	for i := 0; i < c.WorkerCount; i++ {
 		go func() {
-			c.createWorker(out)
+			in := make(chan Request)
+			c.Worker(in, out, c.Scheduler.WorkderReady)
 		}()
 	}
 
@@ -36,44 +30,15 @@ func (c *ConcurrentEngine) Run(seed ...Request) {
 		c.Scheduler.Submit(r)
 	}
 
+	resultCounts := 0
 	for {
 		result := <-out
+		resultCounts++
 		for _, r := range result.Requests {
 			c.Scheduler.Submit(r)
 		}
 		for _, item := range result.Items {
-			// fmt.Printf("Got : %v\n", item)
 			c.ItemChan <- item
 		}
 	}
-}
-
-func (c *ConcurrentEngine) worker(r Request) (ParseResult, error) {
-	fmt.Println("Url: ", r.Url)
-	body, err := fetcher.Fetch(r.Url)
-	if err != nil {
-		return ParseResult{}, err
-	}
-
-	parseResult := r.ParserFunc(body)
-	return parseResult, nil
-}
-
-func (c *ConcurrentEngine) createWorker(out chan ParseResult) {
-	in := c.Scheduler.CreateWokerChan()
-	for {
-		c.Scheduler.WorkderReady(in)
-
-		r := <-in
-		result, err := c.worker(r)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		out <- result
-	}
-}
-
-func (c *ConcurrentEngine) ItemSave(user *model.Profile) {
-
 }

@@ -1,3 +1,3 @@
-module github.com/go-crawler/zhenaiwang
+module crawer
 
 go 1.14

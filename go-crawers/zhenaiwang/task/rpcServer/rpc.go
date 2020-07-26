@@ -1,19 +1,15 @@
 package rpcServer
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
-	"task/model"
+	"task/Worker"
 )
 
-
-func (s *SerializeParser) Worker)
-
-func (s *SerializeParser) RegisterWorkerService(host string) {
-	rpc.Register("WorkerService", new(SerializeParser))
+func RegisterWorkerService(host string) {
+	rpc.RegisterName("WorkerService", new(Worker.WorkerService))
 	listen, err := net.Listen("tcp", host)
 	if err != nil {
 		log.Fatal(err)
@@ -22,9 +18,10 @@ func (s *SerializeParser) RegisterWorkerService(host string) {
 	for {
 		conn, err := listen.Accept()
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			continue
 		}
+
 		go jsonrpc.ServeConn(conn)
 	}
 }

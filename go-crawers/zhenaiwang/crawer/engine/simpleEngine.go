@@ -1,10 +1,9 @@
 package engine
 
 import (
+	"crawer/fetcher"
 	"fmt"
 	"log"
-
-	"github.com/go-crawler/zhenaiwang/fetcher"
 )
 
 type SimpleEngine struct{}
@@ -31,13 +30,13 @@ func (s SimpleEngine) Run(seed ...Request) {
 	}
 }
 
-func (s SimpleEngine) worker(r Request) (ParseResult, error) {
+func (s SimpleEngine) worker(r Request) (RequestResult, error) {
 	fmt.Println("Url: ", r.Url)
 	body, err := fetcher.Fetch(r.Url)
 	if err != nil {
-		return ParseResult{}, err
+		return RequestResult{}, err
 	}
 
-	parseResult := r.ParserFunc(body)
+	parseResult := r.Parser.Parse(body)
 	return parseResult, nil
 }

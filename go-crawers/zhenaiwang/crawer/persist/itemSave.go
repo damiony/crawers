@@ -1,11 +1,10 @@
 package persist
 
 import (
+	"crawer/engine"
 	"fmt"
 	"net/rpc"
 	"time"
-
-	"github.com/go-crawler/zhenaiwang/engine"
 )
 
 func ItemSave(client *rpc.Client) chan engine.Item {
@@ -18,6 +17,7 @@ func ItemSave(client *rpc.Client) chan engine.Item {
 func Save(out chan engine.Item, client *rpc.Client) {
 	var reply string
 	for {
+		time.Sleep(50 * time.Millisecond)
 		item := <-out
 		go func() {
 			err := client.Call("ItemSaveService.SaveItems", item, &reply)
@@ -25,7 +25,6 @@ func Save(out chan engine.Item, client *rpc.Client) {
 				fmt.Printf("Save items error: %v\n", err)
 			}
 		}()
-		time.Sleep(time.Second)
 	}
 
 }

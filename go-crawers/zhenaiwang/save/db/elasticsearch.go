@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"save/engine"
 	"strconv"
@@ -46,5 +47,8 @@ func InsertDataToES(item *engine.Item) error {
 		Id(strconv.Itoa(item.Id)).
 		BodyJson(item).
 		Do(context.Background())
+	if err == nil {
+		fmt.Printf("%+v\n", item)
+	}
 	return err
 }

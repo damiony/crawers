@@ -1,8 +1,6 @@
 package scheduler
 
-import (
-	"github.com/go-crawler/zhenaiwang/engine"
-)
+import "crawer/engine"
 
 type QueuedScheduler struct {
 	requestChan chan engine.Request

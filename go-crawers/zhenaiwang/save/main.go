@@ -5,12 +5,11 @@ import (
 	"net"
 	"net/rpc/jsonrpc"
 	"save/rpcServer"
-	"time"
 )
 
 func main() {
 	rpcServer.RegisterItemSaveService()
-	listen, err := net.Listen("tcp", ":12345")
+	listen, err := net.Listen("tcp", ":30000")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -22,6 +21,5 @@ func main() {
 		}
 
 		go jsonrpc.ServeConn(conn)
-		time.Sleep(time.Second)
 	}
 }
